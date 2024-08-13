@@ -1,4 +1,3 @@
-
 # Image Annotation Tools
 
 ## Features
