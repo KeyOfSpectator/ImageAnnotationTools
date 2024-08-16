@@ -1,3 +1,3 @@
-.idea
-__pycache__
-./double_check_iou_tool/results/*
+.idea/
+__pycache__/
+/double_check_iou_tool/results/
