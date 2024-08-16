@@ -70,7 +70,6 @@ def get_this_image_in_group(image, coco_data_dict) -> (dict, bool):
     return {}, False
 
 
-
 def double_check_two_cocos(
         coco_json1_file_path,
         coco_json2_file_path,
