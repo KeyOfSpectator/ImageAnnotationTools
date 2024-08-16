@@ -63,6 +63,12 @@ def get_all_annotaions_in_image(image, coco_data_dict):
     return this_image_dict
 
 
+def get_this_image_in_group(image, coco_data_dict) -> (dict, bool):
+    for image_in_other_group in coco_data_dict["images"]:
+        if image["file_name"] == image_in_other_group["file_name"]:
+            return image_in_other_group, True
+    return {}, False
+
 
 
 def double_check_two_cocos(
@@ -77,9 +83,17 @@ def double_check_two_cocos(
 
     # 1. all images in input1
     for image in coco1_data_dict["images"]:
-        # 1.1 two group of annotation
+
+        if image["path"] == "/datasets/PBCs_new/aba_01.jpg":
+            pass
+
+        this_image_in_group2, is_found_image = get_this_image_in_group(image, coco2_data_dict)
+        if not is_found_image:
+            continue;
+
+        # 1.1 two group of annotationall_annotations_in_this_image_dict_2 = {dict: 3} {'annotations': [], 'categories': [{'color': '#0000ff', 'id': 3, 'keypoint_colors': [], 'metadata': {}, 'name': 'microorgansim', 'supercategory': ''}], 'images': [{'annotated': False, 'annotating': [], 'category_ids': [], 'dataset_id': 1, 'deleted': False,... View
         all_annotations_in_this_image_dict_1 = get_all_annotaions_in_image(image, coco1_data_dict)
-        all_annotations_in_this_image_dict_2 = get_all_annotaions_in_image(image, coco2_data_dict)
+        all_annotations_in_this_image_dict_2 = get_all_annotaions_in_image(this_image_in_group2, coco2_data_dict)
 
         # record result
         # matched annotation list is each coco's annotation bbox beyond IoU threshold. suspected list is not matched, need further manual inspection.
@@ -151,32 +165,27 @@ def double_check_two_cocos(
 
     # 2. judge if have different images
     for image_in_group1 in coco1_data_dict["images"]:
-        is_showed_in_group2 = False
-        for image_in_group2 in coco2_data_dict["images"]:
-            if image_in_group1["id"] == image_in_group2["id"]:
-                is_showed_in_group2 = True
-        if is_showed_in_group2 == False:
+        this_image_in_group2, is_found_image = get_this_image_in_group(image_in_group1, coco2_data_dict)
+        if not is_found_image:
             # this image is never showed in group1
             # give a warning log.
             print("[WARNING] image file_name: " + image_in_group1['file_name'] + "never showed in group2.")
 
     for image_in_group2 in coco2_data_dict["images"]:
+        this_image_in_group1, is_found_image = get_this_image_in_group(image_in_group2, coco1_data_dict)
         is_showed_in_group1 = False
-        for image_in_group1 in coco1_data_dict["images"]:
-            if image_in_group1["id"] == image_in_group2["id"]:
-                is_showed_in_group1 = True
-        if is_showed_in_group1 == False:
-            # this image is never showed in group1
+        if not is_found_image:
+            # this image is never showed in group2
             # give a warning log.
-            print("[WARNING] image file_name: " + image_in_group2['file_name'] + "never showed in group1.")
+            print("[WARNING] image file_name: " + image_in_group2['file_name'] + "never showed in group2.")
 
 
 print("finished.")
 
 
 if __name__ == "__main__":
-    coco_json1_file_path = 'J:\\workspace_j\\20240812-yolo10\\lotus_PBCs_new_20240812_one_cal\\coco-1723429856.0694387-20240812-1.json'
-    coco_json2_file_path = 'J:\\workspace_j\\20240812-yolo10\\lotus_PBCs_new_20240812_one_cal\\coco-1723429856.0694387-20240812-2.json'
+    coco_json1_file_path = 'J:\\workspace_j\\20240816-double-check\\PBCs_new-240813.json'
+    coco_json2_file_path = 'J:\\workspace_j\\20240816-double-check\\PBCs-5.json'
 
     double_check_two_cocos(coco_json1_file_path, coco_json2_file_path, os.path.join(os.path.abspath(os.curdir), "results"))
 
