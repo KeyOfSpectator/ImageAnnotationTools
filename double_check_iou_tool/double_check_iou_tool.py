@@ -70,6 +70,27 @@ def get_this_image_in_group(image, coco_data_dict) -> (dict, bool):
     return {}, False
 
 
+def if_annotation_in_group1_is_smaller_remain(annotation1, annotation2, image_to_inherit,
+                                              annotation_category_to_inherit, set_color) -> dict:
+    # 1. smaller box area remain.
+    if annotation1["bbox"][2] * annotation1["bbox"][3] <= annotation2["bbox"][2] * annotation2["bbox"][3]:
+        return convert_conclusion_annotaion(annotation1, image_to_inherit, annotation_category_to_inherit, set_color)
+    return None
+
+
+# conclusion annotation is based on group1 image, image id/file_name/path, and based on group1's category id.
+# color green represent matched. #1A971E
+# color red represent not matched.  #C9151A
+def convert_conclusion_annotaion(annotation, image_to_inherit, annotation_category_to_inherit, set_color) -> dict:
+    annotation["image_id"] = image_to_inherit["id"]
+    annotation["category_id"] = annotation_category_to_inherit["category_id"]
+    if set_color is not None:
+        # color green represent matched. #1A971E
+        # color red represent not matched.  #C9151A
+        annotation["color"] = set_color
+    return annotation
+
+
 def double_check_two_cocos(
         coco_json1_file_path,
         coco_json2_file_path,
@@ -101,6 +122,11 @@ def double_check_two_cocos(
         matched_annotations_in_this_image_list_2 = []
         suspected_annotations_in_this_image_list_2 = []
 
+        # conclusion annotation is based on group1 image, image id/file_name/path, and based on group1's category id.
+        conclusion_matched_annotations_in_this_image_list = []
+        conclusion_suspected_annotations_in_this_image_list = []
+        conclusion_all_annotations_in_this_image_list = []
+
         # 1.2 calculate IoU of two group of annotation. for annotation1
         for annotation1 in all_annotations_in_this_image_dict_1['annotations']:
             is_this_annotation_matched = False
@@ -111,8 +137,21 @@ def double_check_two_cocos(
             if is_this_annotation_matched:
                 matched_annotations_in_this_image_list_1.append(annotation1)
                 # keep the smaller area of annotation
+                # green color #1A971E represent matched.
+                conclusion_matched_annotation = if_annotation_in_group1_is_smaller_remain(annotation1, annotation2,
+                                                                                          image_to_inherit=image,
+                                                                                          annotation_category_to_inherit=annotation1,
+                                                                                          set_color="#1A971E")
+                if conclusion_matched_annotation is not None:
+                    conclusion_matched_annotations_in_this_image_list.append(conclusion_matched_annotation)
             else:
                 suspected_annotations_in_this_image_list_1.append(annotation1)
+                # red color #C9151A represent suspected.
+                conclusion_suspected_annotation = convert_conclusion_annotaion(annotation1, image_to_inherit=image,
+                                                                               annotation_category_to_inherit=annotation1,
+                                                                               set_color="#C9151A")
+                if conclusion_suspected_annotation is not None:
+                    conclusion_suspected_annotations_in_this_image_list.append(conclusion_suspected_annotation)
 
         # 1.3 calculate IoU of two group of annotation. for annotation2
         for annotation2 in all_annotations_in_this_image_dict_2['annotations']:
@@ -123,42 +162,87 @@ def double_check_two_cocos(
                     is_this_annotation_matched = True
             if is_this_annotation_matched:
                 matched_annotations_in_this_image_list_2.append(annotation1)
-                # keep the smaller area of annotation
+                # # keep the smaller area of annotation
+                # green color #1A971E represent matched.
+                conclusion_matched_annotation = if_annotation_in_group1_is_smaller_remain(annotation2, annotation1,
+                                                                                          image_to_inherit=image,
+                                                                                          annotation_category_to_inherit=annotation1,
+                                                                                          set_color="#1A971E")
+                if conclusion_matched_annotation is not None:
+                    conclusion_matched_annotations_in_this_image_list.append(conclusion_matched_annotation)
             else:
-                suspected_annotations_in_this_image_list_2.append(annotation1)
+                suspected_annotations_in_this_image_list_2.append(annotation2)
+                # red color #C9151A represent suspected.
+                conclusion_suspected_annotation = convert_conclusion_annotaion(annotation2, image_to_inherit=image,
+                                                                               annotation_category_to_inherit=annotation1,
+                                                                               set_color="#C9151A")
+                if conclusion_suspected_annotation is not None:
+                    conclusion_suspected_annotations_in_this_image_list.append(conclusion_suspected_annotation)
 
         # 1.4 output this result to file.
         raw_file_name = image["file_name"]
         # output file format is coco .json
-        parts=raw_file_name.split('.')
-        file_name = parts[0]+".json"
-
+        parts = raw_file_name.split('.')
+        file_name = parts[0] + ".json"
 
         ###### output result ######
 
-        # output group1 matched result
-        matched_output_result_file_path_for_group1 = os.path.join(double_check_result_output_dir_path, "group1", "matched", file_name)
-        matched_result_group1 = gen_new_coco_dict(all_annotations_in_this_image_dict_1, matched_annotations_in_this_image_list_1)
+        # 1.1 output group1 matched result
+        matched_output_result_file_path_for_group1 = os.path.join(double_check_result_output_dir_path, "group1",
+                                                                  "matched", file_name)
+        matched_result_group1 = gen_new_coco_dict(all_annotations_in_this_image_dict_1,
+                                                  matched_annotations_in_this_image_list_1)
         utils.json_dict_dump_to_file(matched_result_group1, matched_output_result_file_path_for_group1)
 
-        # output group1 suspected result
-        suspected_output_result_file_path_for_group1 = os.path.join(double_check_result_output_dir_path, "group1", "suspected", file_name)
-        suspected_result_group1 = gen_new_coco_dict(all_annotations_in_this_image_dict_1, suspected_annotations_in_this_image_list_1)
+        # 1.2 output group1 suspected result
+        suspected_output_result_file_path_for_group1 = os.path.join(double_check_result_output_dir_path, "group1",
+                                                                    "suspected", file_name)
+        suspected_result_group1 = gen_new_coco_dict(all_annotations_in_this_image_dict_1,
+                                                    suspected_annotations_in_this_image_list_1)
         utils.json_dict_dump_to_file(suspected_result_group1, suspected_output_result_file_path_for_group1)
 
-        # output group2 matched result
+        # 2.1 output group2 matched result
         matched_output_result_file_path_for_group2 = os.path.join(double_check_result_output_dir_path, "group2",
                                                                   "matched", file_name)
         matched_result_group2 = gen_new_coco_dict(all_annotations_in_this_image_dict_2,
                                                   matched_annotations_in_this_image_list_2)
         utils.json_dict_dump_to_file(matched_result_group2, matched_output_result_file_path_for_group2)
 
-        # output group2 suspected result
+        # 2.2 output group2 suspected result
         suspected_output_result_file_path_for_group2 = os.path.join(double_check_result_output_dir_path, "group2",
                                                                     "suspected", file_name)
         suspected_result_group2 = gen_new_coco_dict(all_annotations_in_this_image_dict_2,
                                                     suspected_annotations_in_this_image_list_2)
         utils.json_dict_dump_to_file(suspected_result_group2, suspected_output_result_file_path_for_group2)
+
+        # 3.1 conclusion output matched
+        matched_output_result_file_path_for_conclusion = os.path.join(double_check_result_output_dir_path, "conclusion",
+                                                                      "matched", file_name)
+        matched_result_for_conclusion = gen_new_coco_dict(all_annotations_in_this_image_dict_1,
+                                                          conclusion_matched_annotations_in_this_image_list)
+        utils.json_dict_dump_to_file(matched_result_for_conclusion, matched_output_result_file_path_for_conclusion)
+
+        # 3.2 conclusion output suspected
+        suspected_output_result_file_path_for_conclusion = os.path.join(double_check_result_output_dir_path,
+                                                                        "conclusion",
+                                                                        "suspected", file_name)
+        suspected_result_for_conclusion = gen_new_coco_dict(all_annotations_in_this_image_dict_1,
+                                                            conclusion_suspected_annotations_in_this_image_list)
+        utils.json_dict_dump_to_file(suspected_result_for_conclusion, suspected_output_result_file_path_for_conclusion)
+
+        # 3.3 conclusion output all
+        all_output_result_file_path_for_conclusion = os.path.join(double_check_result_output_dir_path, "conclusion",
+                                                                  "all", file_name)
+        conclusion_all_annotations_in_this_image_list = conclusion_matched_annotations_in_this_image_list + conclusion_suspected_annotations_in_this_image_list
+        reindex_id_conclusion_all_annotations_in_this_image_list = []
+        reindex_annotation_id = 0
+        for annotation in conclusion_all_annotations_in_this_image_list:
+            reindex_annotation_id += 1
+            annotation["id"] = reindex_annotation_id
+            reindex_id_conclusion_all_annotations_in_this_image_list.append(annotation)
+        all_result_for_conclusion = gen_new_coco_dict(all_annotations_in_this_image_dict_1,
+                                                      reindex_id_conclusion_all_annotations_in_this_image_list)
+        utils.json_dict_dump_to_file(all_result_for_conclusion, all_output_result_file_path_for_conclusion)
 
     # end for group1 images
 
@@ -181,10 +265,10 @@ def double_check_two_cocos(
 
 print("finished.")
 
-
 if __name__ == "__main__":
     coco_json1_file_path = 'J:\\workspace_j\\20240816-double-check\\PBCs_new-240813.json'
-    coco_json2_file_path = 'J:\\workspace_j\\20240816-double-check\\PBCs-5.json'
+    # coco_json2_file_path = 'J:\\workspace_j\\20240816-double-check\\PBCs-5.json'
+    coco_json2_file_path = 'J:\\workspace_j\\20240816-double-check\\eccfacb5-c740-45e8-99e0-ce91954f1e4f.json'
 
-    double_check_two_cocos(coco_json1_file_path, coco_json2_file_path, os.path.join(os.path.abspath(os.curdir), "results"))
-
+    double_check_two_cocos(coco_json1_file_path, coco_json2_file_path,
+                           os.path.join(os.path.abspath(os.curdir), "results"), iou_threshold=0.1)

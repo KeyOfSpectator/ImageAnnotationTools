@@ -25,13 +25,31 @@ e.g.
 
     double_check_two_cocos(coco_json1_file_path, coco_json2_file_path, os.path.join(os.path.abspath(os.curdir), "results"))
 
+Group represent the two annotators.
+Results contains two folders, one for each annotator.
+Each group have matched and suspected annotations.
+
+Double-check result will save in conclusion floder.
+when one annotaion is matched with another annotation, the matched annotation with smaller area box will be saved in matched conclusion folder.
+The final conclusion merge all matched annotations and suspected annotations with different color.
+# color green represent matched. #1A971E
+# color red represent not matched.  #C9151A
+
+Results is coco json format. For convenient export, conclusion result is based on group1 image, image id/file_name/path, and based on group1's category id.
+
 # result file structure
 
-group represent the two annotators.
-results contains two folders, one for each annotator.
-each group have matched and suspected annotations.
-
 results/
+    conclusion/
+        all/
+            image1.json  # merged all matched and suspected annotations
+            image2.json
+        matched/
+            image1.json
+            image2.json
+        suspected/
+            image1.json
+            image2.json
     group1/
         matched/
             image1.json
