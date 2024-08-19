@@ -91,6 +91,13 @@ def convert_conclusion_annotaion(annotation, image_to_inherit, annotation_catego
     return annotation
 
 
+def is_duplicated_annotation(annotation, unique_conclusion_all_annotations_in_this_image_list):
+    for annotation1 in unique_conclusion_all_annotations_in_this_image_list:
+        if annotation["bbox"] == annotation1["bbox"]:
+            return True
+    return False
+
+
 def double_check_two_cocos(
         coco_json1_file_path,
         coco_json2_file_path,
@@ -104,12 +111,13 @@ def double_check_two_cocos(
     # 1. all images in input1
     for image in coco1_data_dict["images"]:
 
-        if image["path"] == "/datasets/PBCs_new/aba_01.jpg":
-            pass
+        ## for debug
+        # if image["path"] == "/datasets/PBCs_new/ade_06.jpg":
+        #     pass
 
         this_image_in_group2, is_found_image = get_this_image_in_group(image, coco2_data_dict)
         if not is_found_image:
-            continue;
+            continue
 
         # 1.1 two group of annotationall_annotations_in_this_image_dict_2 = {dict: 3} {'annotations': [], 'categories': [{'color': '#0000ff', 'id': 3, 'keypoint_colors': [], 'metadata': {}, 'name': 'microorgansim', 'supercategory': ''}], 'images': [{'annotated': False, 'annotating': [], 'category_ids': [], 'dataset_id': 1, 'deleted': False,... View
         all_annotations_in_this_image_dict_1 = get_all_annotaions_in_image(image, coco1_data_dict)
@@ -134,17 +142,16 @@ def double_check_two_cocos(
                 iou = cal_iou(annotation1["bbox"], annotation2["bbox"])
                 if iou >= iou_threshold:
                     is_this_annotation_matched = True
-            if is_this_annotation_matched:
-                matched_annotations_in_this_image_list_1.append(annotation1)
-                # keep the smaller area of annotation
-                # green color #1A971E represent matched.
-                conclusion_matched_annotation = if_annotation_in_group1_is_smaller_remain(annotation1, annotation2,
-                                                                                          image_to_inherit=image,
-                                                                                          annotation_category_to_inherit=annotation1,
-                                                                                          set_color="#1A971E")
-                if conclusion_matched_annotation is not None:
-                    conclusion_matched_annotations_in_this_image_list.append(conclusion_matched_annotation)
-            else:
+                    matched_annotations_in_this_image_list_1.append(annotation1)
+                    # keep the smaller area of annotation
+                    # green color #1A971E represent matched.
+                    conclusion_matched_annotation = if_annotation_in_group1_is_smaller_remain(annotation1, annotation2,
+                                                                                              image_to_inherit=image,
+                                                                                              annotation_category_to_inherit=annotation1,
+                                                                                              set_color="#1A971E")
+                    if conclusion_matched_annotation is not None:
+                        conclusion_matched_annotations_in_this_image_list.append(conclusion_matched_annotation)
+            if not is_this_annotation_matched:
                 suspected_annotations_in_this_image_list_1.append(annotation1)
                 # red color #C9151A represent suspected.
                 conclusion_suspected_annotation = convert_conclusion_annotaion(annotation1, image_to_inherit=image,
@@ -160,17 +167,16 @@ def double_check_two_cocos(
                 iou = cal_iou(annotation2["bbox"], annotation1["bbox"])
                 if iou >= iou_threshold:
                     is_this_annotation_matched = True
-            if is_this_annotation_matched:
-                matched_annotations_in_this_image_list_2.append(annotation1)
-                # # keep the smaller area of annotation
-                # green color #1A971E represent matched.
-                conclusion_matched_annotation = if_annotation_in_group1_is_smaller_remain(annotation2, annotation1,
-                                                                                          image_to_inherit=image,
-                                                                                          annotation_category_to_inherit=annotation1,
-                                                                                          set_color="#1A971E")
-                if conclusion_matched_annotation is not None:
-                    conclusion_matched_annotations_in_this_image_list.append(conclusion_matched_annotation)
-            else:
+                    matched_annotations_in_this_image_list_2.append(annotation1)
+                    # # keep the smaller area of annotation
+                    # green color #1A971E represent matched.
+                    conclusion_matched_annotation = if_annotation_in_group1_is_smaller_remain(annotation2, annotation1,
+                                                                                              image_to_inherit=image,
+                                                                                              annotation_category_to_inherit=annotation1,
+                                                                                              set_color="#1A971E")
+                    if conclusion_matched_annotation is not None:
+                        conclusion_matched_annotations_in_this_image_list.append(conclusion_matched_annotation)
+            if not is_this_annotation_matched:
                 suspected_annotations_in_this_image_list_2.append(annotation2)
                 # red color #C9151A represent suspected.
                 conclusion_suspected_annotation = convert_conclusion_annotaion(annotation2, image_to_inherit=image,
@@ -234,9 +240,17 @@ def double_check_two_cocos(
         all_output_result_file_path_for_conclusion = os.path.join(double_check_result_output_dir_path, "conclusion",
                                                                   "all", file_name)
         conclusion_all_annotations_in_this_image_list = conclusion_matched_annotations_in_this_image_list + conclusion_suspected_annotations_in_this_image_list
+
+        # unique box
+        unique_conclusion_all_annotations_in_this_image_list = []
+        for annotation in conclusion_all_annotations_in_this_image_list:
+            if not is_duplicated_annotation(annotation, unique_conclusion_all_annotations_in_this_image_list):
+                unique_conclusion_all_annotations_in_this_image_list.append(annotation)
+
+
         reindex_id_conclusion_all_annotations_in_this_image_list = []
         reindex_annotation_id = 0
-        for annotation in conclusion_all_annotations_in_this_image_list:
+        for annotation in unique_conclusion_all_annotations_in_this_image_list:
             reindex_annotation_id += 1
             annotation["id"] = reindex_annotation_id
             reindex_id_conclusion_all_annotations_in_this_image_list.append(annotation)
@@ -266,9 +280,8 @@ def double_check_two_cocos(
 print("finished.")
 
 if __name__ == "__main__":
-    coco_json1_file_path = 'J:\\workspace_j\\20240816-double-check\\PBCs_new-240813.json'
-    # coco_json2_file_path = 'J:\\workspace_j\\20240816-double-check\\PBCs-5.json'
-    coco_json2_file_path = 'J:\\workspace_j\\20240816-double-check\\eccfacb5-c740-45e8-99e0-ce91954f1e4f.json'
+    coco_json1_file_path = 'J:\\workspace_j\\20240819\\merged_annotator1\\PCBs_annotator1.json'
+    coco_json2_file_path = 'J:\\workspace_j\\20240819\\merged_annotator2\\PCBs_annotator2.json'
 
     double_check_two_cocos(coco_json1_file_path, coco_json2_file_path,
                            os.path.join(os.path.abspath(os.curdir), "results"), iou_threshold=0.1)
