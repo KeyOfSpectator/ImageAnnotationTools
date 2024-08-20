@@ -89,7 +89,7 @@ coco_metadata_json_file = "J:\\workspace\\xxxxxx\\dataset1-metadata.json"
 
 # If you want to remap the image id, you can use this file path.
 # If you use the original dataset with same image id, you can set this file path to "".
-image_id_remapping_file = "J:\\workspace\\20240820\\double_check_dataset_image_mapping.json"
+image_id_remapping_file = "J:\\workspace\\xxxxxx\\double_check_dataset_image_mapping.json"
 e.g.
         [
             {

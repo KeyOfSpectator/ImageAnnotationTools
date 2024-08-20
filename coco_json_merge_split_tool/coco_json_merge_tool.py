@@ -97,14 +97,14 @@ def merge_coco(input_dir_path, output_file_path, metadata_file_path, image_id_ma
 
 if __name__ == '__main__':
     # will merge the files in input dir, each file is a coco json file for one image.
-    input_dir_path = "J:\\workspace_j\\20240820\\splited_double_check"
+    input_dir_path = "J:\\workspace_j\\xxxxxx\\splited_double_check"
 
     # merge coco json result will be saved in this file
-    output_file = "J:\\workspace_j\\20240820\\merged_double_check\\merged_double_check.json"
+    output_file = "J:\\workspace_j\\xxxxxx\\merged_double_check\\merged_double_check.json"
 
     # the output file's image id and category id will be the same as the metadata file, mapping the same image filename and category name.
-    coco_metadata_json_file = "J:\\workspace_j\\20240820\\PBCs_new-19-export-backup-20240919.json"
+    coco_metadata_json_file = "J:\\workspace_j\\xxxxxx\\PBCs_new-19-export-backup.json"
 
-    image_id_remapping_file = "J:\\workspace_j\\20240820\\double_check_5_image_mapping.json"
+    image_id_remapping_file = "J:\\workspace_j\\xxxxxx\\double_check_5_image_mapping.json"
 
     merge_coco(input_dir_path, output_file, coco_metadata_json_file, image_id_remapping_file)

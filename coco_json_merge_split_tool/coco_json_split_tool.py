@@ -35,16 +35,7 @@ def split_coco(input_file_path, output_dir_path):
 
 if __name__ == '__main__':
 
-    # 20240610
-    # input_file_path='C:\\Users\\KeyOfSpectator\\Desktop\\Lotus\\20240610-export-coco-results\\PBCs-5.json'
-    # output_dir_path='C:\\Users\\KeyOfSpectator\\Desktop\\Lotus\\20240610-export-coco-results\\results_20240610\\'
-
-    # 20240804
-    # input_file_path='J:\\workspace_j\\20240812-yolo10\\lotus_PBCs_new_20240804_one_cal\\coco-1723429856.0694387-20240804-1.json'
-    # output_dir_path='J:\\workspace_j\\20240812-yolo10\\lotus_PBCs_new_20240804_one_cal\\labels\\all-coco\\'
-
-    # 20240819
-    input_file_path="C:\\Users\\KeyOfSpectator\\Desktop\\Lotus\\20240819-double-check\\PBCs-初稿标注.json"
-    output_dir_path = 'J:\\workspace_j\\20240819\\splited_微生物目标检测导出240819\\'
+    input_file_path="C:\\Users\\KeyOfSpectator\\Desktop\\Lotus\\xxxxxx-double-check\\PBCs-annotation-1.json"
+    output_dir_path = 'J:\\workspace_j\\xxxxxx\\splited_export_dir\\'
 
     split_coco(input_file_path, output_dir_path)

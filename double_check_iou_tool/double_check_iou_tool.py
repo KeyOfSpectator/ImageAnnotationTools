@@ -280,8 +280,8 @@ def double_check_two_cocos(
 print("finished.")
 
 if __name__ == "__main__":
-    coco_json1_file_path = 'J:\\workspace_j\\20240819\\merged_annotator1\\PCBs_annotator1.json'
-    coco_json2_file_path = 'J:\\workspace_j\\20240819\\merged_annotator2\\PCBs_annotator2.json'
+    coco_json1_file_path = 'J:\\workspace_j\\xxxxxx\\merged_annotator1\\PCBs_annotator1.json'
+    coco_json2_file_path = 'J:\\workspace_j\\xxxxxx\\merged_annotator2\\PCBs_annotator2.json'
 
     double_check_two_cocos(coco_json1_file_path, coco_json2_file_path,
                            os.path.join(os.path.abspath(os.curdir), "results"), iou_threshold=0.1)
