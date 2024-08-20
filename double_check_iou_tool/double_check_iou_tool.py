@@ -112,8 +112,10 @@ def double_check_two_cocos(
     for image in coco1_data_dict["images"]:
 
         ## for debug
-        # if image["path"] == "/datasets/PBCs_new/ade_06.jpg":
-        #     pass
+        if image["path"] == "/datasets/PBCs_new/kpn-cre_01.jpg":
+            pass
+        if image["file_name"] == "/datasets/PBCs_new/kpn-cre_01.jpg":
+            pass
 
         this_image_in_group2, is_found_image = get_this_image_in_group(image, coco2_data_dict)
         if not is_found_image:
@@ -280,8 +282,8 @@ def double_check_two_cocos(
 print("finished.")
 
 if __name__ == "__main__":
-    coco_json1_file_path = 'J:\\workspace_j\\20240819\\merged_annotator1\\PCBs_annotator1.json'
-    coco_json2_file_path = 'J:\\workspace_j\\20240819\\merged_annotator2\\PCBs_annotator2.json'
+    coco_json1_file_path = 'J:\\workspace_j\\20240820\\merged_annotator1\\PBCs_annotator1-1.json'
+    coco_json2_file_path = 'J:\\workspace_j\\20240820\\merged_annotator2\\PBCs_annotator2-1.json'
 
     double_check_two_cocos(coco_json1_file_path, coco_json2_file_path,
                            os.path.join(os.path.abspath(os.curdir), "results"), iou_threshold=0.1)

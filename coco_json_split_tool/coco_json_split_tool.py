@@ -44,7 +44,7 @@ if __name__ == '__main__':
     # output_dir_path='J:\\workspace_j\\20240812-yolo10\\lotus_PBCs_new_20240804_one_cal\\labels\\all-coco\\'
 
     # 20240819
-    input_file_path="C:\\Users\\KeyOfSpectator\\Desktop\\Lotus\\20240819-double-check\\PBCs-初稿标注.json"
-    output_dir_path = 'J:\\workspace_j\\20240819\\splited_微生物目标检测导出240819\\'
+    input_file_path="J:\\workspace_j\\20240820\\微生物目标检测导出240819-rename-category.json"
+    output_dir_path = 'J:\\workspace_j\\20240820\\splited_微生物目标检测导出240819-rename-category\\'
 
     split_coco(input_file_path, output_dir_path)

@@ -57,6 +57,9 @@ def merge_coco(input_dir_path, output_file_path, metadata_file_path, image_id_ma
                 # the image dict need to be merged.
                 image_dict = utils.file_json_loads(abs_filepath)
 
+                if filename == "kpn-cre_01.jpg":
+                    pass
+
                 for meta_image in metadata_dict['images']:
                     if meta_image['file_name'] == image_dict['images'][0]['file_name']:
 
@@ -96,14 +99,28 @@ def merge_coco(input_dir_path, output_file_path, metadata_file_path, image_id_ma
 
 if __name__ == '__main__':
     # will merge the files in input dir, each file is a coco json file for one image.
-    input_dir_path = "J:\\workspace_j\\20240820\\splited_double_check"
+    input_dir_path = "J:\\workspace_j\\20240820\\splited_double_check_2"
 
     # merge coco json result will be saved in this file
-    output_file = "J:\\workspace_j\\20240820\\merged_double_check\\merged_double_check.json"
+    output_file = "J:\\workspace_j\\20240820\\merged_double_check_2\\merged_double_check.json"
 
     # the output file's image id and category id will be the same as the metadata file, mapping the same image filename and category name.
-    coco_metadata_json_file = "J:\\workspace_j\\20240820\\PBCs_new-19-export-backup-20240919.json"
+    coco_metadata_json_file = "J:\\workspace_j\\20240820\\PBCs_new-19-export-metadata-20240820.json"
 
     image_id_remapping_file = "J:\\workspace_j\\20240820\\double_check_5_image_mapping.json"
+
+    # ## annotation1
+    # # will merge the files in input dir, each file is a coco json file for one image.
+    # input_dir_path = "J:\\workspace_j\\20240820\\splited_annotator1"
+    #
+    # # merge coco json result will be saved in this file
+    # output_file = "J:\\workspace_j\\20240820\\merged_annotator1\\PBCs_annotator1-1.json"
+    #
+    # # the output file's image id and category id will be the same as the metadata file, mapping the same image filename and category name.
+    # coco_metadata_json_file = "J:\\workspace_j\\20240820\\PBCs_new-19-export-metadata-20240820.json"
+    #
+    # image_id_remapping_file = "J:\\workspace_j\\20240820\\PBCs_new_image_id_mapping.json"
+
+
 
     merge_coco(input_dir_path, output_file, coco_metadata_json_file, image_id_remapping_file)
