@@ -102,7 +102,6 @@ coco_metadata_json_file = "J:\\workspace\\xxxxxx\\dataset1-metadata.json"
             ...
         ]
 -->
-
 image_id_remapping_file = "J:\\workspace\\xxxxxx\\double_check_dataset_image_mapping.json"
 
 merge_coco(input_dir_path, output_file, coco_metadata_json_file, image_id_remapping_file)
