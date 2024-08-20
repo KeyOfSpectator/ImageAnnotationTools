@@ -1,10 +1,16 @@
-
 import os
-
 import utils
 
 
-def merge_coco(input_dir_path, output_file_path, metadata_file_path):
+def get_mapping_image_id_by_image_filename(image, image_id_mapping_list):
+    for image_id_meta in image_id_mapping_list:
+        if image_id_meta['file_name'] == image['file_name']:
+            return image_id_meta['id']
+    print("not found remapping image id, use the original image id. image: ", image)
+    return image['id']
+
+
+def merge_coco(input_dir_path, output_file_path, metadata_file_path, image_id_mapping_file=""):
     """
     This tool file help to merge each one-image coco file to one dataset's coco file.
     :param input_dir_path: filepath of the input dir, will merge the files in input dir, each file is a coco json file for one image.
@@ -12,9 +18,30 @@ def merge_coco(input_dir_path, output_file_path, metadata_file_path):
     :param output_file_path: merge coco json result will be saved in this file.
 
     :param: metadata_file_path: the output file's image id and category id will be the same as the metadata file, mapping the same image filename and category name.
+
+    :param: image_id_mapping_file: If you want to export a merge coco in another datasets, the image id is change.
+    This image id mapping will reset the image id with the same image file_name. is a image json array in coco image rest api format.
+    e.g.
+            [
+                {
+                "id": 2030,
+                "file_name": "Bthe_01.jpg",
+                "annotated": false,
+                "annotating": [],
+                "num_annotations": 0
+                },
+                ...
+            ]
     """
     ret_coco_dict = {}
     metadata_dict = utils.file_json_loads(metadata_file_path)
+
+    image_id_mapping_list = []
+    if image_id_mapping_file != "":
+        image_id_mapping_list = utils.file_json_loads(image_id_mapping_file)
+
+    for image in metadata_dict['images']:
+        image['id'] = get_mapping_image_id_by_image_filename(image, image_id_mapping_list)
 
     ret_coco_dict['images'] = metadata_dict['images']
     ret_coco_dict['categories'] = metadata_dict['categories']
@@ -37,6 +64,7 @@ def merge_coco(input_dir_path, output_file_path, metadata_file_path):
                         for annotation in image_dict['annotations']:
                             reindex_annotation_id += 1
                             annotation['image_id'] = meta_image['id']
+
                             annotation['id'] = reindex_annotation_id
                             # find category id
                             category_name = "unknown_category_name"
@@ -45,7 +73,8 @@ def merge_coco(input_dir_path, output_file_path, metadata_file_path):
                                     category_name = category['name']
                                     break
                             if category_name == "unknown_category_name":
-                                print("not found category in this image coco file, image file: ", abs_filepath, " annotation: ", annotation)
+                                print("not found category in this image coco file, image file: ", abs_filepath,
+                                      " annotation: ", annotation)
 
                             not_found_category = True
                             for metadata_category in metadata_dict['categories']:
@@ -54,26 +83,27 @@ def merge_coco(input_dir_path, output_file_path, metadata_file_path):
                                     not_found_category = False
                                     break
                             if not_found_category:
-                                print("not found category:", category_name, " image file: ", abs_filepath, " annotation: ", annotation)
+                                print("not found category:", category_name, " image file: ", abs_filepath,
+                                      " annotation: ", annotation)
 
                             # append annotation
                             ret_coco_dict['annotations'].append(annotation)
-
 
         # end every image file
         utils.json_dict_dump_to_file(ret_coco_dict, output_file_path)
         print("end all.")
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     # will merge the files in input dir, each file is a coco json file for one image.
-    input_dir_path = "J:\\workspace_j\\20240819\\splited_annotator2"
+    input_dir_path = "J:\\workspace_j\\20240820\\splited_double_check"
 
     # merge coco json result will be saved in this file
-    output_file = "J:\\workspace_j\\20240819\\merged_annotator1\\PCBs_annotator2.json"
+    output_file = "J:\\workspace_j\\20240820\\merged_double_check\\merged_double_check.json"
 
     # the output file's image id and category id will be the same as the metadata file, mapping the same image filename and category name.
-    coco_metadata_json_file = "J:\\workspace_j\\20240819\\PBCs_new-19-export-backup-20240919.json"
+    coco_metadata_json_file = "J:\\workspace_j\\20240820\\PBCs_new-19-export-backup-20240919.json"
 
-    merge_coco(input_dir_path, output_file, coco_metadata_json_file)
+    image_id_remapping_file = "J:\\workspace_j\\20240820\\double_check_5_image_mapping.json"
 
+    merge_coco(input_dir_path, output_file, coco_metadata_json_file, image_id_remapping_file)
