@@ -89,18 +89,19 @@ coco_metadata_json_file = "J:\\workspace\\xxxxxx\\dataset1-metadata.json"
 
 <!--If you want to remap the image id, you can use this file path.-->
 <!--If you use the original dataset with same image id, you can set this file path to "".-->
-<!--This image id mapping will reset the image id with the same image file_name. is a image json arra in coco image rest api format.-->
-<!--file content e.g.-->
-<!--        [-->
-<!--            {-->
-<!--            "id": 2030,-->
-<!--            "file_name": "Bthe_01.jpg",-->
-<!--            "annotated": false,-->
-<!--            "annotating": [],-->
-<!--            "num_annotations": 0-->
-<!--            },-->
-<!--            ...-->
-<!--        ]-->
+<!--This image id mapping will reset the image id with the same image file_name. is a image json array in coco image rest api format.-->
+<!-- file content e.g.
+        [
+            {
+            "id": 2030,
+            "file_name": "Bthe_01.jpg",
+            "annotated": false,
+            "annotating": [],
+            "num_annotations": 0
+            },
+            ...
+        ]
+-->
 
 image_id_remapping_file = "J:\\workspace\\xxxxxx\\double_check_dataset_image_mapping.json"
 
