@@ -20,6 +20,7 @@ def merge_coco(input_dir_path, output_file_path, metadata_file_path, image_id_ma
     :param: metadata_file_path: the output file's image id and category id will be the same as the metadata file, mapping the same image filename and category name.
 
     :param: image_id_mapping_file: If you want to export a merge coco in another datasets, the image id is change.
+    If you use the original dataset with same image id, you can set this file path to "".
     This image id mapping will reset the image id with the same image file_name. is a image json array in coco image rest api format.
     e.g.
             [
