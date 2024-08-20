@@ -2,7 +2,10 @@
 
 ## Features
 
-#### 1. Double Check Annotation Tool
+#### 1. Double Check IoU Annotation Tool
+
+in ./double_check_iou_tool folder
+
 Double check 2 coco json. Just for bbox, not for segmentation.
 
 Keep the bbox with IoU(Intersection over Union) greater than the threshold among the different two group of annotations from two people in the same image.
