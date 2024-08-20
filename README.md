@@ -68,6 +68,8 @@ results/
 #### 2. COCO Json Merge / Split Tool
 Split Tool: Split the coco json of one dataset with multiple labeled images, to a batch of coco json files of one labeled image.
 
+in ./coco_json_merge_split_tool folder
+
 ```angular2html
 # Split coco json
 # how to run it
