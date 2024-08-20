@@ -67,29 +67,3 @@ results/
 
 
 ```
-
-#### 3. COCO 2 YOLO Tool
-COCO Json convert to YOLO txt format, for YOLO training.
-
-```angular2html
-## 1. cd ./coco_2_yolo_tool
-
-## 2. install 
-# pip install -r requirements.txt
-
-## 3. run 
-directory_coco_json = "J:\\workspace_j\\20240812-yolo10\\lotus_PBCs_new_20240812_one_cal"
-output_yolo_dir_path = "J:\\workspace_j\\20240812-yolo10\\lotus_PBCs_new_20240812_one_cal\\labels\\training"
-
-source = "COCO"
-
-if source == "COCO":
-    convert_coco_json(
-        directory_coco_json,  # directory with *.json
-        output_yolo_dir_path,
-        use_segments=True,
-        cls91to80=False,
-    )
-
-
-```
