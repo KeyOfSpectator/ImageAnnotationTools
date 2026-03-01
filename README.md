@@ -1,5 +1,7 @@
 # Image Annotation Tools
 
+This project is associated with the paper: https://www.nature.com/articles/s41597-026-06651-3
+
 ## Features
 
 #### 1. Double Check IoU Annotation Tool
